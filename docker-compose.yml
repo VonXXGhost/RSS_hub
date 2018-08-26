@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+
+  db:
+    image: 'postgres'
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - net
+
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - net
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py migrate --noinput
+    command: ./run_web.sh
+    volumes:
+      - rss_vol:/rss_server
+    ports:
+      - "8000:8000"
+    networks:
+      - net
+    depends_on:
+      - db
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'celery -A RSS_hub worker -l info'
+    volumes:
+      - rss_vol:/rss_server
+    networks:
+      - net
+    depends_on:
+      - rabbit
+      - web
+
+  beater:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'celery -A RSS_hub beat -l info'
+    volumes:
+      - rss_vol:/rss_server
+    networks:
+      - net
+    depends_on:
+      - worker
+
+networks:
+  net:
+
+volumes:
+  postgres_data:
+  rss_vol:
