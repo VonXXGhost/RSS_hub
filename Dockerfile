@@ -8,9 +8,11 @@ RUN set -x \
 
 RUN mkdir /RSS_server
 WORKDIR /RSS_server
-ADD . /RSS_server
 
+ADD ./requirements.txt .
 RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+ADD . /RSS_server
 RUN chmod +x run_*
 
 EXPOSE 8000
