@@ -7,9 +7,22 @@ import logging
 import hashlib
 
 from .models import *
+from django.urls import reverse
+from django.conf import settings
+from django_push.publisher import ping_hub
+from .feeds import *
 
 
 logger = logging.getLogger('RSS_feed.service')
+
+
+def publish(feed_type):
+    try:
+        ping_hub('http://%s/%s' % (settings.SITE_DOMAIN, feed_type.link))
+        logger.info('published succeeded.')
+    except Exception as e:
+        logger.error('published failed.')
+        logger.error(e)
 
 
 class AnitamaArticleFeedService():
@@ -101,3 +114,4 @@ class AnitamaArticleFeedService():
             if not self._save_article(article_info):
                 break
         self.logger.info('timeline updated')
+        publish(AnitamaTimelineFeed)

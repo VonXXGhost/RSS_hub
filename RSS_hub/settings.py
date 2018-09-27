@@ -159,3 +159,6 @@ LOGGING = {
 djcelery.setup_loader()
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+
+PUSH_HUB = 'https://pubsubhubbub.superfeedr.com/'
+SITE_DOMAIN = ''

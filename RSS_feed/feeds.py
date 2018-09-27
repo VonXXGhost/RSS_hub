@@ -1,4 +1,4 @@
-from django.contrib.syndication.views import Feed
+from django_push.publisher.feeds import Feed
 from .models import *
 import logging
 import datetime
@@ -8,7 +8,7 @@ logger = logging.getLogger('RSS_feed.feed')
 
 class AnitamaTimelineFeed(Feed):
     title = 'Anitama'
-    link = '/anitama'
+    link = '/feed/anitama'
     description = 'Anitama timeline'
     channel_filter = ('News',)
 
